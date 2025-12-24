@@ -107,6 +107,10 @@ export const analyzeCommand = new Command('analyze')
 
             // Exit with appropriate code
             if (result.metadata.bySeverity.critical > 0) {
+                console.log('\n' + '⛔'.repeat(20));
+                console.log('❌ PR BLOQUEADA: Encontrados ' + result.metadata.bySeverity.critical + ' problemas CRÍTICOS');
+                console.log('   Corrija os problemas acima antes de fazer merge.');
+                console.log('⛔'.repeat(20) + '\n');
                 process.exit(1);
             }
         } catch (error) {
