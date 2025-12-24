@@ -1,0 +1,29 @@
+# zava-review - Backend C# (.NET)
+# ================================
+
+languages:
+  - csharp
+
+rules:
+  cleanCode: true
+  solid: true
+  performance: true
+  security: true
+  readability: true
+
+ai:
+  provider: gemini
+  model: gemini-2.0-flash
+
+customPrompt: |
+  Este é um projeto ASP.NET Core / .NET 8.
+  
+  Avalie com atenção:
+  - Princípios SOLID e Clean Architecture
+  - Injeção de dependência correta
+  - Tratamento de exceções (try-catch, middleware)
+  - Validação de inputs (DTOs, FluentValidation)
+  - Boas práticas de Entity Framework Core
+  - Segurança (SQL Injection, XSS, autenticação)
+  - Async/await corretamente implementado
+  - Naming conventions do C#

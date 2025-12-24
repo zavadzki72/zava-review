@@ -1,6 +1,7 @@
 # zava-review - Automatic Code Review
 # ====================================
 # Runs AI code review when a PR is opened/updated
+# Supports monorepo with separate configs per folder
 
 name: AI Code Review
 
@@ -9,9 +10,13 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  review:
-    name: 🤖 Zava Review
+  review-back:
+    name: 🤖 Review Backend (C#)
     runs-on: ubuntu-latest
+    
+    # Only run if back/ folder has changes
+    if: |
+      github.event.pull_request.changed_files > 0
     
     permissions:
       contents: read
@@ -23,25 +28,43 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Check for back changes
+        id: check-back
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep "^back/" || true)
+          if [ -n "$CHANGED" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "📁 Backend changes detected:"
+            echo "$CHANGED"
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No backend changes"
+          fi
+      
       - name: Setup Node.js
+        if: steps.check-back.outputs.has_changes == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
       
       - name: Install zava-review
+        if: steps.check-back.outputs.has_changes == 'true'
         run: |
           git clone https://github.com/zavadzki72/zava-review.git /tmp/zava-review
           cd /tmp/zava-review
           npm ci
           npm run build
       
-      - name: Get PR diff
+      - name: Get Backend diff
+        if: steps.check-back.outputs.has_changes == 'true'
         run: |
           git fetch origin ${{ github.base_ref }}
-          git diff origin/${{ github.base_ref }}...HEAD > /tmp/pr.diff
-          echo "📄 Diff contains $(wc -l < /tmp/pr.diff) lines"
+          git diff origin/${{ github.base_ref }}...HEAD -- back/ > /tmp/back.diff
+          echo "📄 Backend diff: $(wc -l < /tmp/back.diff) lines"
       
-      - name: Run AI Code Review
+      - name: Review Backend
+        if: steps.check-back.outputs.has_changes == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
@@ -49,7 +72,7 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
           node /tmp/zava-review/packages/cli/dist/index.js analyze \
-            --config ./zava-review.yml \
-            --diff /tmp/pr.diff \
+            --config ./back/zava-review.yml \
+            --diff /tmp/back.diff \
             --platform github \
             --pr ${{ github.event.pull_request.number }}
