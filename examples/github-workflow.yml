@@ -1,0 +1,55 @@
+# zava-review - Automatic Code Review
+# ====================================
+# Runs AI code review when a PR is opened/updated
+
+name: AI Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  review:
+    name: 🤖 Zava Review
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install zava-review
+        run: |
+          git clone https://github.com/zavadzki72/zava-review.git /tmp/zava-review
+          cd /tmp/zava-review
+          npm ci
+          npm run build
+      
+      - name: Get PR diff
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          git diff origin/${{ github.base_ref }}...HEAD > /tmp/pr.diff
+          echo "📄 Diff contains $(wc -l < /tmp/pr.diff) lines"
+      
+      - name: Run AI Code Review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          node /tmp/zava-review/packages/cli/dist/index.js analyze \
+            --config ./zava-review.yml \
+            --diff /tmp/pr.diff \
+            --platform github \
+            --pr ${{ github.event.pull_request.number }}

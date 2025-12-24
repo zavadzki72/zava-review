@@ -1,0 +1,44 @@
+# zava-review Configuration Example
+# ===================================
+# Copy this file to your project root as 'zava-review.yml'
+
+# Languages used in your project
+# This helps the AI understand the context
+languages:
+  - typescript
+  - csharp
+
+# Analysis rules (boolean flags)
+# Set to false to disable a rule category
+rules:
+  cleanCode: true     # Clean Code principles
+  solid: true         # SOLID principles
+  performance: true   # Performance optimizations
+  security: true      # Security vulnerabilities
+  readability: true   # Code readability
+
+# Optional: Documentation paths for additional context
+# The AI will read these files to understand your project better
+documentation:
+  project: docs/project.md           # General project documentation
+  architecture: docs/architecture.md  # Code standards and architecture
+
+# AI Provider configuration
+ai:
+  # Options: claude, openai, gemini
+  provider: claude
+  
+  # Model identifier (provider-specific)
+  # Claude: claude-sonnet-4-20250514, claude-opus-4-20250514
+  # OpenAI: gpt-4o, gpt-4-turbo
+  # Gemini: gemini-1.5-pro, gemini-1.5-flash
+  model: claude-sonnet-4-20250514
+
+# Optional: Custom instructions for the AI
+# Use this for project-specific rules
+customPrompt: |
+  Pay special attention to:
+  - DDD (Domain-Driven Design) patterns
+  - Avoid business logic in controllers
+  - Check for proper error handling
+  - Validate input parameters

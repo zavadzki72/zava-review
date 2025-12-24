@@ -1,0 +1,60 @@
+{
+    "name": "zava-review-vscode",
+    "displayName": "Zava Review",
+    "description": "AI-powered code review for your workspace",
+    "version": "0.1.0",
+    "publisher": "zava",
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "categories": [
+        "Linters",
+        "Other"
+    ],
+    "activationEvents": [],
+    "main": "./dist/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "zava-review.analyzeAll",
+                "title": "Zava Review: Analyze All Files"
+            },
+            {
+                "command": "zava-review.analyzeChanges",
+                "title": "Zava Review: Analyze Pending Changes"
+            },
+            {
+                "command": "zava-review.configure",
+                "title": "Zava Review: Configure"
+            }
+        ],
+        "configuration": {
+            "title": "Zava Review",
+            "properties": {
+                "zava-review.configPath": {
+                    "type": "string",
+                    "default": "zava-review.yml",
+                    "description": "Path to the zava-review configuration file"
+                },
+                "zava-review.outputDir": {
+                    "type": "string",
+                    "default": ".zava-review",
+                    "description": "Directory for output reports"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run build",
+        "build": "tsc",
+        "clean": "rimraf dist",
+        "watch": "tsc -watch"
+    },
+    "dependencies": {
+        "@zava-review/core": "*"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.85.0",
+        "rimraf": "^5.0.5"
+    }
+}
