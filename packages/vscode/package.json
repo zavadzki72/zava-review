@@ -1,9 +1,26 @@
 {
     "name": "zava-review-vscode",
     "displayName": "Zava Review",
-    "description": "AI-powered code review for your workspace",
+    "description": "AI-powered code review for your workspace using Claude, OpenAI, or Gemini",
     "version": "0.1.0",
-    "publisher": "zava",
+    "publisher": "zavadzki7",
+    "author": {
+        "name": "Marcus Zavadzki"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/zavadzki72/zava-review"
+    },
+    "bugs": {
+        "url": "https://github.com/zavadzki72/zava-review/issues"
+    },
+    "homepage": "https://github.com/zavadzki72/zava-review#readme",
+    "icon": "images/icon.png",
+    "galleryBanner": {
+        "color": "#1e1e1e",
+        "theme": "dark"
+    },
     "engines": {
         "vscode": "^1.85.0"
     },
@@ -11,21 +28,33 @@
         "Linters",
         "Other"
     ],
+    "keywords": [
+        "code review",
+        "AI",
+        "linter",
+        "Claude",
+        "OpenAI",
+        "Gemini",
+        "code quality"
+    ],
     "activationEvents": [],
     "main": "./dist/extension.js",
     "contributes": {
         "commands": [
             {
                 "command": "zava-review.analyzeAll",
-                "title": "Zava Review: Analyze All Files"
+                "title": "Zava Review: Analyze All Files",
+                "icon": "$(search)"
             },
             {
                 "command": "zava-review.analyzeChanges",
-                "title": "Zava Review: Analyze Pending Changes"
+                "title": "Zava Review: Analyze Pending Changes",
+                "icon": "$(git-compare)"
             },
             {
                 "command": "zava-review.configure",
-                "title": "Zava Review: Configure"
+                "title": "Zava Review: Configure",
+                "icon": "$(gear)"
             }
         ],
         "configuration": {
@@ -45,16 +74,21 @@
         }
     },
     "scripts": {
-        "vscode:prepublish": "npm run build",
-        "build": "tsc",
+        "vscode:prepublish": "npm run package",
+        "compile": "tsc",
+        "build": "node esbuild.js",
+        "package": "node esbuild.js --production",
         "clean": "rimraf dist",
-        "watch": "tsc -watch"
+        "watch": "node esbuild.js --watch",
+        "vsce:package": "vsce package",
+        "vsce:publish": "vsce publish"
     },
-    "dependencies": {
-        "@zava-review/core": "*"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@types/vscode": "^1.85.0",
+        "@vscode/vsce": "^2.22.0",
+        "@zava-review/core": "*",
+        "esbuild": "^0.20.0",
         "rimraf": "^5.0.5"
     }
 }
